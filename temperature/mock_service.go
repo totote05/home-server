@@ -17,4 +17,21 @@ func (s *MockTemperatureService) HandleRegisterTemperature(value []byte) error {
 	}
 }
 
+func (s *MockTemperatureService) HandleTemperatureHistory(resp func(records <-chan Record)) {
+	resp(s.handler.GetHistory())
+}
+
+func (s *MockTemperatureService) HandleLastValue() []byte {
+	last := s.handler.GetLastValue()
+
+	if last == nil {
+		return nil
+	} else {
+		return last.ToJSON()
+	}
+}
+
+func (s *MockTemperatureService) Start() {}
+func (s *MockTemperatureService) Stop()  {}
+
 var _ TemperatureService = (*MockTemperatureService)(nil)

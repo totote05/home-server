@@ -13,6 +13,11 @@ type Record struct {
 	ComputedHeatIndex float64 `json:"chi" validate:"required"`
 }
 
+func (r *Record) ToJSON() []byte {
+	value, _ := json.Marshal(r)
+	return value
+}
+
 func ValidateRecord(record Record) error {
 	v := validator.New()
 	return v.Struct(record)
