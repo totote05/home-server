@@ -2,7 +2,11 @@ module home_api.totote05.ar
 
 go 1.19
 
-require github.com/go-playground/validator v9.31.0+incompatible
+require (
+	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/joho/godotenv v1.4.0
+	github.com/plaid/go-envvar v1.1.0
+)
 
 require (
 	github.com/go-playground/locales v0.14.0 // indirect

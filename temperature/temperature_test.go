@@ -3,6 +3,7 @@ package temperature_test
 import (
 	"reflect"
 	"testing"
+	"time"
 
 	"home_api.totote05.ar/temperature"
 )
@@ -23,6 +24,7 @@ func TestRegisterTemperature(t *testing.T) {
 		Temperature:       20.0,
 		Humidity:          19.0,
 		ComputedHeatIndex: 25.3,
+		Recorded:          time.Now(),
 	}
 	CheckRecordStructure(t, record)
 
@@ -36,6 +38,7 @@ func TestRegisterTemperature(t *testing.T) {
 		Temperature:       21.0,
 		Humidity:          19.0,
 		ComputedHeatIndex: 25.5,
+		Recorded:          time.Now(),
 	}
 	CheckRecordStructure(t, record)
 	if size := temp.Register(record); size != 2 {
@@ -45,18 +48,22 @@ func TestRegisterTemperature(t *testing.T) {
 }
 
 func TestGetTemperatureHistory(t *testing.T) {
+	date1, _ := time.Parse(time.RFC3339, "2023-02-02T20:30:00Z")
+	date2, _ := time.Parse(time.RFC3339, "2023-02-02T20:31:00Z")
 	values := []temperature.Record{
 		{
 			Source:            "galeria",
 			Temperature:       20.0,
 			Humidity:          19.0,
 			ComputedHeatIndex: 25.3,
+			Recorded:          date1,
 		},
 		{
 			Source:            "galeria",
 			Temperature:       21.0,
 			Humidity:          19.0,
 			ComputedHeatIndex: 25.5,
+			Recorded:          date2,
 		},
 	}
 
@@ -78,25 +85,31 @@ func TestGetTemperatureHistory(t *testing.T) {
 }
 
 func TestGetLastValue(t *testing.T) {
+	date1, _ := time.Parse(time.RFC3339, "2023-02-02T20:30:00Z")
 	record1 := temperature.Record{
 		Source:            "galeria",
 		Temperature:       20.0,
 		Humidity:          19.0,
 		ComputedHeatIndex: 25.3,
+		Recorded:          date1,
 	}
 	CheckRecordStructure(t, record1)
+	date2, _ := time.Parse(time.RFC3339, "2023-02-02T20:31:00Z")
 	record2 := temperature.Record{
 		Source:            "galeria",
 		Temperature:       21.0,
 		Humidity:          19.0,
 		ComputedHeatIndex: 25.5,
+		Recorded:          date2,
 	}
 	CheckRecordStructure(t, record2)
+	date3, _ := time.Parse(time.RFC3339, "2023-02-02T20:32:00Z")
 	record3 := temperature.Record{
 		Source:            "galeria",
 		Temperature:       21.0,
 		Humidity:          19.0,
 		ComputedHeatIndex: 25.5,
+		Recorded:          date3,
 	}
 	CheckRecordStructure(t, record3)
 

@@ -2,23 +2,20 @@ package main
 
 import (
 	"log"
-	"os"
-	"os/signal"
-	"syscall"
 
+	"home_api.totote05.ar/core"
+	"home_api.totote05.ar/server"
 	"home_api.totote05.ar/temperature"
 )
 
 func main() {
-	var service temperature.TemperatureService
+	env := core.GetEnv()
+	repo := temperature.NewMockTemperatureRepository([]temperature.Record{})
+	temp := temperature.NewTemperature(repo)
+	svce := temperature.NewService(temp)
+	serv := server.NewHttpServer(env.HttpHost)
 
-	go service.Start()
-	log.Println("Service started")
-
-	s := make(chan<- os.Signal, 1)
-	signal.Notify(s, os.Interrupt, syscall.SIGTERM)
-
-	service.Stop()
-	log.Println("Service stopped")
+	serv.RegisterTemperatureHandler(svce)
+	serv.Start()
 	log.Println("App terminated")
 }

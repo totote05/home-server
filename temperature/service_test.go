@@ -10,7 +10,7 @@ import (
 func TestHandleRegisterTemperature(t *testing.T) {
 	repository := temperature.NewMockTemperatureRepository([]temperature.Record{})
 	temp := temperature.NewTemperature(repository)
-	service := temperature.NewMockTemperatureService(temp)
+	service := temperature.NewService(temp)
 
 	record := []byte(`"Temperature": 20.0, "Humidity": 19.0, "ComputedHeatIndex": 25.3}`)
 	if err := service.HandleRegisterTemperature(record); err == nil {
@@ -21,6 +21,12 @@ func TestHandleRegisterTemperature(t *testing.T) {
 	record = []byte(`{"Temperature": 20.0, "Humidity": 19.0, "ComputedHeatIndex": 25.3}`)
 	if err := service.HandleRegisterTemperature(record); err == nil {
 		t.Logf("%s missing fields", record)
+		t.Fail()
+	}
+
+	record = []byte(`{"src": "galeria", "tem": 20.0, "hum": 19.0, "chi": 25.3, "rec": "2023-02-02T23:01:00Z-03:00"}`)
+	if err := service.HandleRegisterTemperature(record); err == nil {
+		t.Logf("failed to register value %s, error: %s", record, err)
 		t.Fail()
 	}
 
@@ -48,7 +54,7 @@ func TestHandleTemperatureHistory(t *testing.T) {
 	}
 	repository := temperature.NewMockTemperatureRepository(values)
 	temp := temperature.NewTemperature(repository)
-	service := temperature.NewMockTemperatureService(temp)
+	service := temperature.NewService(temp)
 
 	service.HandleTemperatureHistory(func(records <-chan temperature.Record) {
 		var history []temperature.Record
@@ -97,7 +103,7 @@ func TestHandleLastValue(t *testing.T) {
 
 	repository := temperature.NewMockTemperatureRepository([]temperature.Record{})
 	temp := temperature.NewTemperature(repository)
-	service := temperature.NewMockTemperatureService(temp)
+	service := temperature.NewService(temp)
 
 	if value := service.HandleLastValue(); value != nil {
 		t.Log("the last must be nil when is empty")
